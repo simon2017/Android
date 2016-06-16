@@ -1,4 +1,4 @@
-package cl.sgutierc.balance;
+package cl.sgutierc.balance.database;
 
 import android.content.Context;
 import cl.sgutierc.libdatarepository.*;
@@ -30,6 +30,7 @@ public class BalanceSchema extends DBSchema {
                 "\tid INTEGER not null PRIMARY KEY AUTOINCREMENT,\n" +
                 "\tidCategoria INTEGER not null,\n" +
                 "\tmonto INTEGER not null,\n" +
+                "\tfecha TEXT not null,\n" +
                 "\tforeign key(idCategoria) references categoria(id) on delete cascade on update cascade\n" +
                 ");";
         String basicCategories="insert into categoria(descripcion) values " +

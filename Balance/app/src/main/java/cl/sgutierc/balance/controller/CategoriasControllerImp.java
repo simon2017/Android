@@ -1,19 +1,21 @@
-package cl.sgutierc.balance.dao;
+package cl.sgutierc.balance.controller;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+import cl.sgutierc.balance.data.Categoria;
+
 /**
  * Created by sgutierc on 08-06-2016.
  */
-public class CategoriasQuery {
+public class CategoriasControllerImp implements CategoriasController{
     private final String TABLE_NAME="categoria";
 
-    public CategoriasQuery(){};
+    public CategoriasControllerImp(){};
 
-    public List<CategoriasDao> getCategorias(SQLiteDatabase sqLiteDatabase){
+    public List<Categoria> getCategorias(SQLiteDatabase sqLiteDatabase){
 
         String columns[]={"id","descripcion"};
         String selection=null;
@@ -24,12 +26,12 @@ public class CategoriasQuery {
 
         Cursor c=sqLiteDatabase.query(TABLE_NAME,columns,selection,selectionArgs,groupBy,having,orderBy);
 
-        List<CategoriasDao> categorias=new ArrayList();
+        List<Categoria> categorias=new ArrayList();
 
         while(c.moveToNext()){
             long id = c.getLong(0);
             String descripcion=c.getString(1);
-            categorias.add(new CategoriasDao(id,descripcion));
+            categorias.add(new Categoria(id,descripcion));
         }
         return categorias;
     }

@@ -1,14 +1,18 @@
-package cl.sgutierc.balance.dao;
+package cl.sgutierc.balance.data;
 
 /**
  * Created by sgutierc on 08-06-2016.
  */
-public class CategoriasDao {
-    private final long id;
-    private final String descripcion;
+public class Categoria {
+    private long id;
+    private String descripcion;
 
-    public CategoriasDao(long id, String descripcion){
+    public Categoria(long id, String descripcion){
+        this(descripcion);
         this.id=id;
+    }
+
+    public Categoria(String descripcion){
         this.descripcion=descripcion;
     }
 

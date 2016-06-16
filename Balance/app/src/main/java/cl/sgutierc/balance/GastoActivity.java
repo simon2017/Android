@@ -1,10 +1,10 @@
 package cl.sgutierc.balance;
 
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -15,10 +15,10 @@ import android.widget.Spinner;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
-import cl.sgutierc.balance.dao.CategoriasDao;
-import cl.sgutierc.balance.dao.CategoriasQuery;
+import cl.sgutierc.balance.data.Categoria;
+import cl.sgutierc.balance.controller.CategoriasControllerImp;
+import cl.sgutierc.balance.database.BalanceSchema;
 import cl.sgutierc.libdatarepository.SQLiteRepo;
 
 /**
@@ -28,10 +28,10 @@ public class GastoActivity extends AppCompatActivity implements DatePickerDialog
 
     public static final String MONTO_BUNDLE_ID="monto.id";
     public static final String CATEGORIA_BUNDLE_ID="categoria.id";
-
+    public static final String FECHA_BUNDLE_ID="fecha.id";
 
     private EditText dateTxt;
-    private final SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
+    public static final SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
     private GastoActivity activity;
 
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -66,18 +66,38 @@ public class GastoActivity extends AppCompatActivity implements DatePickerDialog
             @Override
             public void onClick(View view){
                 EditText montotxt=(EditText)findViewById(R.id.montoEditTxt);
+                EditText dateEditTxt=(EditText)findViewById(R.id.dateEditTxt);
                 Spinner categoriaSpin=(Spinner)findViewById(R.id.categoriaDropdown);
 
-                int monto=Integer.parseInt(montotxt.getText().toString());
-                CategoriasDao categoriaSel=(CategoriasDao)categoriaSpin.getSelectedItem();
+                boolean error=false;
+                long monto=0l;
+                try {
+                    monto = Long.parseLong(montotxt.getText().toString());
+                }catch (NumberFormatException e){
+                    error=true;
+                }
+                Categoria categoriaSel=(Categoria)categoriaSpin.getSelectedItem();
                 long catId=categoriaSel.getId();
+                String date=dateEditTxt.getText().toString();
 
-                Intent intent=new Intent();
-                intent.putExtra(MONTO_BUNDLE_ID,monto);
-                intent.putExtra(CATEGORIA_BUNDLE_ID,catId);
+                if(error==false) {
+                    Intent intent = new Intent();
+                    intent.putExtra(MONTO_BUNDLE_ID, monto);
+                    intent.putExtra(CATEGORIA_BUNDLE_ID, catId);
+                    intent.putExtra(FECHA_BUNDLE_ID, date);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
+                else{
+                    AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(activity);
 
-                setResult(RESULT_OK,intent);
-                finish();
+                    dlgAlert.setMessage("Favor completar el gasto");
+                    dlgAlert.setTitle("Datos incorrectos");
+                    dlgAlert.setPositiveButton("OK", null);
+                    dlgAlert.setCancelable(true);
+                    dlgAlert.create().show();
+
+                }
             }
         });
     }
@@ -91,11 +111,11 @@ public class GastoActivity extends AppCompatActivity implements DatePickerDialog
         SQLiteRepo repository = new SQLiteRepo(this, new BalanceSchema());
         SQLiteDatabase database = repository.getWritableDatabase();
 
-        CategoriasQuery query = new CategoriasQuery();
-        CategoriasDao[] categorias = query.getCategorias(database).toArray(new CategoriasDao[]{});
+        CategoriasControllerImp query = new CategoriasControllerImp();
+        Categoria[] categorias = query.getCategorias(database).toArray(new Categoria[]{});
 
         final Spinner categoriaDropDown = (Spinner) findViewById(R.id.categoriaDropdown);
-        ArrayAdapter<CategoriasDao> adapter = new ArrayAdapter<CategoriasDao>(this, android.R.layout.simple_spinner_dropdown_item, categorias);
+        ArrayAdapter<Categoria> adapter = new ArrayAdapter<Categoria>(this, android.R.layout.simple_spinner_dropdown_item, categorias);
         categoriaDropDown.setAdapter(adapter);
 
     }
