@@ -6,18 +6,26 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
+import cl.sgutierc.balance.controller.GastoControllerImp;
 import cl.sgutierc.balance.data.Categoria;
 import cl.sgutierc.balance.controller.CategoriasControllerImp;
+import cl.sgutierc.balance.data.Gasto;
 import cl.sgutierc.balance.database.BalanceSchema;
 import cl.sgutierc.libdatarepository.SQLiteRepo;
 
@@ -33,6 +41,7 @@ public class GastoActivity extends AppCompatActivity implements DatePickerDialog
     private EditText dateTxt;
     public static final SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
     private GastoActivity activity;
+    private SQLiteDatabase database;
 
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         Calendar newDate = Calendar.getInstance();
@@ -44,7 +53,10 @@ public class GastoActivity extends AppCompatActivity implements DatePickerDialog
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity=this;
-        setContentView(R.layout.gasto_layout);
+        setContentView(R.layout.activity_gasto);
+
+        SQLiteRepo repository = new SQLiteRepo(this, new BalanceSchema());
+         database = repository.getWritableDatabase();
 
         loadCategorias();
 
@@ -100,16 +112,45 @@ public class GastoActivity extends AppCompatActivity implements DatePickerDialog
                 }
             }
         });
+
+        {//load gastos scroll
+            RelativeLayout base = (RelativeLayout) findViewById(R.id.activityGasto);
+            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lp.addRule(RelativeLayout.BELOW, R.id.categoriaDropdown);
+            lp.addRule(RelativeLayout.ABOVE, R.id.saveButton);
+
+            View view = loadGastos();
+            view.setLayoutParams(lp);
+
+            base.addView(view);
+        }
+    }
+
+
+    View loadGastos(){
+
+        ScrollView scrollview=new ScrollView(getApplicationContext());
+        LinearLayout layout=new LinearLayout(getApplicationContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        GastoControllerImp gastoController=new GastoControllerImp(database);
+
+        List<Gasto> gastos=gastoController.getGastos();
+        for(Gasto gasto:gastos){
+            Log.d(this.getClass().getName(),gasto.toString());
+            GastoView gv=new GastoView(getApplicationContext());
+            gv.setGasto(gasto);
+            layout.addView(gv);
+        }
+        scrollview.addView(layout);
+        return scrollview;
     }
 
     /**
      * Carga en combo de categorias las categorias existentes en BD
      */
     void loadCategorias(){
-        BalanceSchema schema = new BalanceSchema();
 
-        SQLiteRepo repository = new SQLiteRepo(this, new BalanceSchema());
-        SQLiteDatabase database = repository.getWritableDatabase();
 
         CategoriasControllerImp query = new CategoriasControllerImp();
         Categoria[] categorias = query.getCategorias(database).toArray(new Categoria[]{});
