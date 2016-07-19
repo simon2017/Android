@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:orientation="horizontal"
     android:weightSum="1.0"
-    tools:context="cl.sgutierc.balance.PresupuestoView"
+    tools:context=".view.presupuesto.PresupuestoView"
     >
 
     <TextView
@@ -22,10 +22,10 @@
         android:layout_weight=".5"
         android:textAlignment="center" />
 
-    <EditText
+    <TextView
         android:ems="10"
         android:gravity="center"
-        android:id="@+id/montoEditTxt"
+        android:id="@+id/montoTxt"
         android:inputType="numberSigned"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"

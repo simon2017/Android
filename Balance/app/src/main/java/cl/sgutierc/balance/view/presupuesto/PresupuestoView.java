@@ -1,4 +1,4 @@
-package cl.sgutierc.balance;
+package cl.sgutierc.balance.view.presupuesto;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -27,6 +27,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import cl.sgutierc.balance.R;
 import cl.sgutierc.balance.controller.CategoriasControllerImp;
 import cl.sgutierc.balance.data.Categoria;
 import cl.sgutierc.balance.data.Presupuesto;
@@ -38,8 +39,7 @@ import cl.sgutierc.libdatarepository.SQLiteRepo;
  */
 public class PresupuestoView extends FrameLayout {
 
-    private Categoria categoria = null;
-    private long monto = 0l;
+    private Presupuesto presupuesto = null;
     private View view = null;
 
     public PresupuestoView(Context context, AttributeSet attrs, int defStyle) {
@@ -65,28 +65,18 @@ public class PresupuestoView extends FrameLayout {
         this.addView(view);
     }
 
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
-        reload();
-    }
-
-    public void setMonto(Long monto) {
-        this.monto = monto;
-        reload();
-    }
-
-    public void setPresupuesto(Presupuesto presupuesto){
-        this.monto = presupuesto.getMonto();
-        this.categoria =presupuesto.getCategoria();
+     public void setPresupuesto(Presupuesto presupuesto){
+        this.presupuesto = presupuesto;
         reload();
     }
 
     private void reload() {
         TextView categoriaTxt = (TextView) this.view.findViewById(R.id.categoriaTxt);
-        EditText montoEdit = (EditText) this.view.findViewById(R.id.montoEditTxt);
+        TextView montoEdit = (TextView) this.view.findViewById(R.id.montoTxt);
 
-        categoriaTxt.setText(this.categoria.getDescripcion());
-        montoEdit.setText(String.valueOf(this.monto));
+        Categoria cat=presupuesto.getCategoria();
+        categoriaTxt.setText(cat.getDescripcion());
+        montoEdit.setText(String.valueOf(presupuesto.getMonto()));
     }
 
 }

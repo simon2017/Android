@@ -4,16 +4,18 @@ package cl.sgutierc.balance.data;
  * Created by sgutierc on 01-07-2016.
  */
 public class Presupuesto {
-    private long id;
+    private long mes;
+    private long annio;
     private long monto;
     private Categoria categoria;
 
     public Presupuesto(long monto, Categoria categoria) {
-    this(-1,monto,categoria);
+        this(-1, -1, monto, categoria);
     }
 
-    public Presupuesto(long id,long monto, Categoria categoria) {
-        this.id=id;
+    public Presupuesto(long mes, long annio, long monto, Categoria categoria) {
+        this.mes = mes;
+        this.annio = annio;
         this.monto = monto;
         this.categoria = categoria;
     }

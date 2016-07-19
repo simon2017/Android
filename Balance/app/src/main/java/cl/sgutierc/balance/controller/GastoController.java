@@ -9,7 +9,7 @@ import cl.sgutierc.balance.data.Gasto;
  */
 public interface GastoController {
 
-    void insertGasto(Gasto gasto) throws Exception;
+    void updateGasto(Gasto gasto) throws Exception;
     List<Gasto> getGastos();
 
 }

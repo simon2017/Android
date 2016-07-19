@@ -8,5 +8,49 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="cl.sgutierc.balance.PresupuestoActivity">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="Presupuestos"
+        android:id="@+id/listTitle"/>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/presListView"
+        android:layout_below="@+id/listTitle"
+        android:layout_above="@+id/categoriaDropdown"
+        android:layout_centerHorizontal="true"/>
+
+    <Spinner
+        android:id="@+id/categoriaDropdown"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/montoEditTxt"
+        android:clickable="true"
+        android:gravity="center"
+        android:spinnerMode="dropdown" />
+
+    <EditText
+        android:id="@+id/montoEditTxt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/saveButton"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:gravity="center"
+        android:inputType="numberSigned"
+        android:textAlignment="center" />
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="Guardar" />
+
+
 
 </RelativeLayout>

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:orientation="horizontal"
     android:weightSum="1.0"
-    tools:context="cl.sgutierc.balance.GastoView"
+    tools:context=".view.gasto.GastoView"
     >
 
     <TextView
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_width="0dp"
         android:layout_weight=".33"
-        android:textAlignment="center" />
+        android:textAlignment="center"/>
 
     <TextView
         android:ems="10"
@@ -33,12 +33,12 @@
         android:layout_height="wrap_content"
         android:layout_width="0dp"
         android:layout_weight=".33"
-        android:textAlignment="center" />
+        android:textAlignment="center"/>
 
-    <EditText
+    <TextView
         android:ems="10"
         android:gravity="center"
-        android:id="@+id/montoEditTxt"
+        android:id="@+id/montoTxt"
         android:inputType="numberSigned"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
@@ -46,5 +46,5 @@
         android:layout_height="wrap_content"
         android:layout_width="0dp"
         android:layout_weight="0.33"
-        android:textAlignment="center" />
+        android:textAlignment="center"/>
 </LinearLayout>

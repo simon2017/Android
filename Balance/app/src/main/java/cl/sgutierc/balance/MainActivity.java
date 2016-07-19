@@ -13,15 +13,17 @@ import java.util.Date;
 
 import cl.sgutierc.balance.controller.GastoControllerImp;
 import cl.sgutierc.balance.data.Categoria;
+import lib.data.lib.data.handler.DataAction;
 import cl.sgutierc.balance.data.Gasto;
 import cl.sgutierc.balance.database.BalanceSchema;
+import cl.sgutierc.balance.dispatcher.DataDispatcher;
 import cl.sgutierc.libdatarepository.SQLiteRepo;
 
 public class MainActivity extends AppCompatActivity {
     private static final int LOAD_GASTO_ACTIVITY_ID = 10;
     private static final int LOAD_PRESUPUESTO_ACTIVITY_ID = 20;
 
-    private GastoControllerImp controller = null;
+    //private GastoControllerImp controller = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +34,9 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase database = repository.getWritableDatabase();
 
         Button gastoBttn = (Button) findViewById(R.id.gastoBttn);
-        controller = new GastoControllerImp(database);
+
+        // controller = new GastoControllerImp(database);
+
 
         gastoBttn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode==LOAD_GASTO_ACTIVITY_ID && resultCode == RESULT_OK) {
+/*
+        if (requestCode == LOAD_GASTO_ACTIVITY_ID && resultCode == RESULT_OK) {
             long monto = data.getLongExtra(GastoActivity.MONTO_BUNDLE_ID, -1);
             long categoriaId = data.getLongExtra(GastoActivity.CATEGORIA_BUNDLE_ID, -1l);
             String fechaString = data.getStringExtra(GastoActivity.FECHA_BUNDLE_ID);
@@ -71,13 +75,12 @@ public class MainActivity extends AppCompatActivity {
             if (monto != -1 && categoriaId != -1) {
                 Log.d(MainActivity.class.getName(), "WORKED! " + monto + " " + categoriaId + " " + date);
             }
-
-            if (controller != null)
-                try {
-                    controller.insertGasto(new Gasto(monto, date, new Categoria(categoriaId, "")));
-                } catch (Exception e) {
-                    Log.e(this.getClass().getName(), e.toString());
-                }
-        }
+            try {
+                Gasto gasto=new Gasto(monto, date, new Categoria(categoriaId, ""));
+                DataDispatcher.getInstance().spread(new DataAction(gasto,DataAction.Trigger.INSERT));
+            } catch (Exception e) {
+                Log.e(this.getClass().getName(), e.toString());
+            }
+        }*/
     }
 }

@@ -21,11 +21,16 @@ public class BalanceSchema extends DBSchema {
                 "\tdescripcion TEXT not null\n" +
                 ");";
         String presupuesto="create table presupuesto(\n" +
-                "\tid INTEGER not null PRIMARY KEY AUTOINCREMENT,\n" +
+                "\tmonth INTEGER not null,\n" +
+                "\tyear INTEGER not null,\n" +
                 "\tidCategoria INTEGER not null,\n" +
                 "\tmonto INTEGER not null,\n" +
-                "\tforeign key(idCategoria) references categoria(id) on delete cascade on update cascade\n" +
+                "\tforeign key(idCategoria) references categoria(id) on delete cascade on update cascade,\n" +
+                "\tPRIMARY KEY(month,year,idCategoria)\n" +
+                "\t\n" +
                 ");";
+
+
         String gasto="create table gasto(\n" +
                 "\tid INTEGER not null PRIMARY KEY AUTOINCREMENT,\n" +
                 "\tidCategoria INTEGER not null,\n" +
