@@ -26,6 +26,14 @@
         android:text="Presupuesto"
         android:id="@+id/presupuestoBttn"
         android:layout_marginTop="10dp"
-        android:layout_below="@id/gastoBttn"/>
+        android:layout_below="@+id/gastoBttn"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Categorias"
+        android:id="@+id/categoriaBttn"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/presupuestoBttn"/>
 
 </RelativeLayout>

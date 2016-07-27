@@ -22,7 +22,7 @@ import cl.sgutierc.libdatarepository.SQLiteRepo;
 public class MainActivity extends AppCompatActivity {
     private static final int LOAD_GASTO_ACTIVITY_ID = 10;
     private static final int LOAD_PRESUPUESTO_ACTIVITY_ID = 20;
-
+    private static final int LOAD_CATEGORIA_ACTIVITY_ID = 30;
     //private GastoControllerImp controller = null;
 
     @Override
@@ -53,6 +53,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), PresupuestoActivity.class);
                 startActivityForResult(intent, LOAD_PRESUPUESTO_ACTIVITY_ID);
+            }
+        });
+
+        Button categoriaBttn = (Button) findViewById(R.id.categoriaBttn);
+        categoriaBttn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), CategoriaActivity.class);
+                startActivityForResult(intent, LOAD_CATEGORIA_ACTIVITY_ID);
             }
         });
 

@@ -1,7 +1,6 @@
 package cl.sgutierc.balance;
 
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -12,28 +11,21 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import cl.sgutierc.balance.controller.GastoControllerImp;
 import cl.sgutierc.balance.data.Categoria;
 import cl.sgutierc.balance.controller.CategoriasControllerImp;
 import cl.sgutierc.balance.data.Gasto;
 import cl.sgutierc.balance.database.BalanceSchema;
-import cl.sgutierc.balance.database.GASTO_TABLE;
 import cl.sgutierc.balance.dispatcher.DataDispatcher;
-import cl.sgutierc.balance.view.gasto.GastoAdapter;
+import cl.sgutierc.balance.dispatcher.RepositoryChannel;
 import cl.sgutierc.balance.view.gasto.GastoList;
-import cl.sgutierc.balance.view.gasto.GastoView;
 import cl.sgutierc.libdatarepository.SQLiteRepo;
 import lib.data.lib.data.handler.DataAction;
 
@@ -115,10 +107,9 @@ public class GastoActivity extends AppCompatActivity implements DatePickerDialog
                         Log.e(this.getClass().getName(), e.toString());
                     }
 
-
                     if (error == false) {
                         Gasto gasto = new Gasto(monto, fecha, categoriaSel);
-                        DataDispatcher.getInstance().spread(new DataAction(gasto, DataAction.Trigger.INSERT));
+                        RepositoryChannel.getInstance().spread(new DataAction(gasto, DataAction.Trigger.INSERT));
                         montotxt.setText("");
                     } else {
                         AlertDialog.Builder dlgAlert = new AlertDialog.Builder(activity);
@@ -150,8 +141,8 @@ public class GastoActivity extends AppCompatActivity implements DatePickerDialog
     void loadCategorias() {
 
 
-        CategoriasControllerImp query = new CategoriasControllerImp();
-        Categoria[] categorias = query.getCategorias(database).toArray(new Categoria[]{});
+        CategoriasControllerImp query = new CategoriasControllerImp(database);
+        Categoria[] categorias = query.getCategorias().toArray(new Categoria[]{});
 
         final Spinner categoriaDropDown = (Spinner) findViewById(R.id.categoriaDropdown);
         ArrayAdapter<Categoria> adapter = new ArrayAdapter<Categoria>(this, android.R.layout.simple_spinner_dropdown_item, categorias);

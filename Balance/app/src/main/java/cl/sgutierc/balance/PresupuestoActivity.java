@@ -10,22 +10,21 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Spinner;
 
-import java.util.List;
+import java.util.Calendar;
 
 import cl.sgutierc.balance.controller.CategoriasControllerImp;
 import cl.sgutierc.balance.controller.GastoControllerImp;
-import cl.sgutierc.balance.controller.PresupuestoController;
 import cl.sgutierc.balance.controller.PresupuestoControllerImp;
 import cl.sgutierc.balance.data.Categoria;
 import cl.sgutierc.balance.data.Presupuesto;
 import cl.sgutierc.balance.database.BalanceSchema;
-import cl.sgutierc.balance.view.presupuesto.PresupuestoAdapter;
-import cl.sgutierc.balance.view.presupuesto.PresupuestoView;
+import cl.sgutierc.balance.dispatcher.DataDispatcher;
+import cl.sgutierc.balance.dispatcher.RepositoryChannel;
+import cl.sgutierc.balance.view.presupuesto.PresupuestoList;
 import cl.sgutierc.libdatarepository.SQLiteRepo;
+import lib.data.lib.data.handler.DataAction;
 
 
 public class PresupuestoActivity extends AppCompatActivity {
@@ -40,10 +39,12 @@ public class PresupuestoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_presupuesto);
         activity = this;
         this.setTitle("Presupuesto");
-        SQLiteRepo repository = new SQLiteRepo(this, new BalanceSchema());
-        database = repository.getWritableDatabase();
-
-        loadPresupuestos(database);
+        //Initialize repository
+        {
+            SQLiteRepo repository = new SQLiteRepo(this, new BalanceSchema());
+            database = repository.getWritableDatabase();
+        }
+        loadPresupuestos();
         loadCategorias();
 
         Button saveBttn = (Button) findViewById(R.id.saveButton);
@@ -63,13 +64,9 @@ public class PresupuestoActivity extends AppCompatActivity {
                                                 error = true;
                                             }
                                             if (error == false) {
-                                                Presupuesto presupuesto = new Presupuesto(monto, categoria);
-                                                PresupuestoController pc = new PresupuestoControllerImp(database);
-                                                try {
-                                                    pc.insertPresupuesto(presupuesto);
-                                                } catch (Exception e) {
-                                                    Log.e(this.getClass().getName(), e.toString());
-                                                }
+                                                Presupuesto presupuesto = new Presupuesto( monto, categoria);
+
+                                                RepositoryChannel.getInstance().spread(new DataAction(presupuesto, DataAction.Trigger.INSERT));
                                             }
                                             if (error == true) {
                                                 AlertDialog.Builder dlgAlert = new AlertDialog.Builder(activity);
@@ -89,29 +86,23 @@ public class PresupuestoActivity extends AppCompatActivity {
 
     }
 
-    private void loadPresupuestos(SQLiteDatabase database) {
-        ListView presLayout = (ListView) findViewById(R.id.presListView);
+    private void loadPresupuestos() {
 
-        PresupuestoControllerImp presupuestoController = new PresupuestoControllerImp(database);
+        PresupuestoList presList = new PresupuestoList(R.id.presListView, this);
 
-        List<Presupuesto> presupuestos = presupuestoController.getPresupuestos();
-        PresupuestoAdapter padapter=new PresupuestoAdapter(getBaseContext(),presupuestos);
-
-        presLayout.setAdapter(padapter);
+        PresupuestoControllerImp presController = new PresupuestoControllerImp(database);
+        DataDispatcher.getInstance().spread(presController.getPresupuestos(), DataAction.Trigger.LOAD);
     }
 
     /**
      * Carga en combo de categorias las categorias existentes en BD
      */
     void loadCategorias() {
-
-
-        CategoriasControllerImp query = new CategoriasControllerImp();
-        Categoria[] categorias = query.getCategorias(database).toArray(new Categoria[]{});
+        CategoriasControllerImp query = new CategoriasControllerImp(database);
+        Categoria[] categorias = query.getCategorias().toArray(new Categoria[]{});
 
         final Spinner categoriaDropDown = (Spinner) findViewById(R.id.categoriaDropdown);
         ArrayAdapter<Categoria> adapter = new ArrayAdapter<Categoria>(this, android.R.layout.simple_spinner_dropdown_item, categorias);
         categoriaDropDown.setAdapter(adapter);
-
     }
 }

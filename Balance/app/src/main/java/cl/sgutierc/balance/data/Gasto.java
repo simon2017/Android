@@ -4,6 +4,7 @@ import java.util.Date;
 
 import lib.data.Data;
 import lib.data.ID;
+import lib.data.dispatcher.LongId;
 
 /**
  * Created by sgutierc on 14-06-2016.
@@ -12,25 +13,9 @@ public class Gasto implements Data {
     private long monto;
     private Date fecha;
     private Categoria categoria;
-    private GastoId id;
+    private LongId id;
 
-    /**
-     *
-     */
-    public static class GastoId implements ID {
-        private final long id;
-
-        public GastoId(long id) {
-            this.id = id;
-        }
-
-        public long getId() {
-            return this.id;
-        }
-    }
-
-
-    /**
+   /**
      * @param monto
      * @param fecha
      * @param categoria
@@ -45,14 +30,14 @@ public class Gasto implements Data {
      * @param fecha
      * @param categoria
      */
-    public Gasto(GastoId id, long monto, Date fecha, Categoria categoria) {
+    public Gasto(LongId id, long monto, Date fecha, Categoria categoria) {
         this.monto = monto;
         this.fecha = fecha;
         this.categoria = categoria;
         this.id = id;
     }
 
-    public void setId(GastoId id) {
+    public void setId(LongId id) {
         this.id = id;
     }
 

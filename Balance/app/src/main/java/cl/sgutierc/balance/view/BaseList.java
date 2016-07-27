@@ -65,10 +65,19 @@ public abstract class BaseList<U extends Data, V extends DataView> extends Array
         public void run() {
             if (trigger == DataAction.Trigger.DELETE)
                 this.adapter.remove(data);
-            else
+            else {
+                int pos = this.adapter.getPosition(data);
+                if (pos > -1) {
+                    Object item = this.adapter.getItem(pos);
+                    this.adapter.remove(item);
+                }
+
                 this.adapter.add(data);
+            }
+            this.adapter.notifyDataSetChanged();
         }
     }
+
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -88,5 +97,5 @@ public abstract class BaseList<U extends Data, V extends DataView> extends Array
 
     protected abstract V getView(Context context);
 
-    protected abstract U convertFrom(Data data);
+    protected abstract U convertFrom(Object data);
 }

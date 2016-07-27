@@ -30,53 +30,36 @@ import java.util.Calendar;
 import cl.sgutierc.balance.R;
 import cl.sgutierc.balance.controller.CategoriasControllerImp;
 import cl.sgutierc.balance.data.Categoria;
+import cl.sgutierc.balance.data.Gasto;
 import cl.sgutierc.balance.data.Presupuesto;
 import cl.sgutierc.balance.database.BalanceSchema;
+import cl.sgutierc.balance.view.DataView;
 import cl.sgutierc.libdatarepository.SQLiteRepo;
 
 /**
  * Created by sgutierc on 08-06-2016.
  */
-public class PresupuestoView extends FrameLayout {
-
-    private Presupuesto presupuesto = null;
-    private View view = null;
+public class PresupuestoView extends DataView<Presupuesto> {
 
     public PresupuestoView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        initView();
+        super(R.layout.presupuesto_view, context, attrs, defStyle);
     }
 
     public PresupuestoView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initView();
+        super(R.layout.presupuesto_view, context, attrs);
     }
 
     public PresupuestoView(Context context) {
-        super(context);
-        initView();
+        super(R.layout.presupuesto_view, context);
     }
 
-    private void initView() {
+    protected void reload() {
+        TextView categoriaTxt = (TextView) getViewLayout().findViewById(R.id.categoriaTxt);
+        TextView montoEdit = (TextView) getViewLayout().findViewById(R.id.montoTxt);
 
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        view = inflater.inflate(R.layout.presupuesto_view, null);
-
-        this.addView(view);
-    }
-
-     public void setPresupuesto(Presupuesto presupuesto){
-        this.presupuesto = presupuesto;
-        reload();
-    }
-
-    private void reload() {
-        TextView categoriaTxt = (TextView) this.view.findViewById(R.id.categoriaTxt);
-        TextView montoEdit = (TextView) this.view.findViewById(R.id.montoTxt);
-
-        Categoria cat=presupuesto.getCategoria();
-        categoriaTxt.setText(cat.getDescripcion());
-        montoEdit.setText(String.valueOf(presupuesto.getMonto()));
+        Categoria cat = getData().getCategoria();
+        categoriaTxt.setText(cat.getTitulo());
+        montoEdit.setText(String.valueOf(getData().getMonto()));
     }
 
 }

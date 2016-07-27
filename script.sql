@@ -1,24 +1,24 @@
 create table categoria(
-	id INTEGER not null PRIMARY KEY AUTOINCREMENT,
+	titulo TEXT not null PRIMARY KEY,
 	descripcion TEXT not null
 );
 
 create table presupuesto(
 	month INTEGER not null,
 	year INTEGER not null,
-	idCategoria INTEGER not null,
+	idCategoria TEXT not null,
 	monto INTEGER not null,
-	foreign key(idCategoria) references categoria(id) on delete cascade on update cascade,
+	foreign key(idCategoria) references categoria(titulo) on delete cascade on update cascade,
 	PRIMARY KEY(month,year,idCategoria)
 	
 );
 
 create table gasto(
 	id INTEGER not null PRIMARY KEY AUTOINCREMENT,
-	idCategoria INTEGER not null,
+	idCategoria TEXT not null,
 	monto INTEGER not null,
 	fecha TEXT not null,
-	foreign key(idCategoria) references categoria(id) on delete cascade on update cascade
+	foreign key(idCategoria) references categoria(titulo) on delete cascade on update cascade
 );
 
-insert into categoria(descripcion) values ("Basicos"),("Combustible"),("Supermercado"),("Extras");
+insert into categoria(titulo,descripcion) values ("Basicos","Basicos"),("Combustible","Combustible"),("Supermercado","Supermercado"),("Extras","Extras");

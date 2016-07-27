@@ -37,7 +37,7 @@ public class GastoView extends DataView<Gasto> {
         TextView fechaTxt = (TextView) getViewLayout().findViewById(R.id.fechaTxt);
         TextView montoEdit = (TextView) getViewLayout().findViewById(R.id.montoTxt);
 
-        categoriaTxt.setText(getData().getCategoria().getDescripcion());
+        categoriaTxt.setText(getData().getCategoria().getTitulo());
         montoEdit.setText(String.valueOf(getData().getMonto()));
 
         fechaTxt.setText(GastoActivity.sdf.format(getData().getFecha()));

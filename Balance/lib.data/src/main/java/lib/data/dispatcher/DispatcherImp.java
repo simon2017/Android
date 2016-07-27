@@ -18,8 +18,8 @@ import lib.data.lib.data.handler.DataAction;
  * @param <V> Interest
  */
 public class DispatcherImp<U extends Listener, V extends Interest> implements Dispatcher<U, V> {
-    HashMap<V, List<U>> listenersMap = null;
-    ExecutorService executor = null;
+    protected HashMap<V, List<U>> listenersMap = null;
+    protected ExecutorService executor = null;
 
     public DispatcherImp() {
         this.listenersMap = new HashMap<V, List<U>>();
@@ -30,7 +30,7 @@ public class DispatcherImp<U extends Listener, V extends Interest> implements Di
      * @param data
      * @return
      */
-    List<V> getInteresteds(DataAction data) {
+    List<V> getInteresteds(Object data) {
         Set<V> interests = listenersMap.keySet();
         List<V> result = new ArrayList<>();
 
@@ -43,35 +43,10 @@ public class DispatcherImp<U extends Listener, V extends Interest> implements Di
         return result;
     }
 
-    /**
-     *
-     * @param dataList
-     * @param trigger
-     */
-    public void spread(List<? extends Data> dataList, DataAction.Trigger trigger) {
-        executor.execute(new Spreader(dataList, trigger));
-    }
-
-    class Spreader implements Runnable {
-        List<? extends Data> dataList;
-        DataAction.Trigger trigger;
-
-        public Spreader(List<? extends Data> dataList,DataAction.Trigger trigger) {
-            this.dataList = dataList;
-            this.trigger = trigger;
-        }
-
-        public void run() {
-            for (Data data : dataList) {
-                spread(new DataAction(data, trigger));
-            }
-        }
-    }
-
-    /**
+      /**
      * @param data
      */
-    public void spread(DataAction data) {
+    public void spread(Object data) {
         List<V> interesteds = getInteresteds(data);
         if ((interesteds == null) || (interesteds != null && interesteds.isEmpty() == true))
             return;
@@ -129,9 +104,9 @@ public class DispatcherImp<U extends Listener, V extends Interest> implements Di
      */
     class Notifier implements Runnable {
         U listener;
-        DataAction data;
+        Object data;
 
-        public Notifier(U listener, DataAction data) {
+        public Notifier(U listener, Object data) {
             this.listener = listener;
             this.data = data;
         }

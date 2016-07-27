@@ -8,7 +8,7 @@ import lib.data.lib.data.handler.DataAction;
  */
 public interface Dispatcher <U extends Listener,V extends Interest>{
 
-    void spread(DataAction data);
+    void spread(Object data);
     void attachListener(U listener, V interest);
     void removeListener(U listener, V interest);
 }

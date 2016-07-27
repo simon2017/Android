@@ -11,33 +11,37 @@ import java.util.List;
 
 import cl.sgutierc.balance.data.Categoria;
 import cl.sgutierc.balance.data.Presupuesto;
+import cl.sgutierc.balance.data.Presupuesto.PresupuestoId;
+import cl.sgutierc.balance.database.CAT_TABLE;
+import cl.sgutierc.balance.database.PRES_TABLE;
+import cl.sgutierc.balance.dispatcher.DataDispatcher;
+import cl.sgutierc.balance.dispatcher.RepositoryChannel;
+import lib.data.StringID;
+import lib.data.dispatcher.ClassInterest;
+import lib.data.dispatcher.Listener;
+import lib.data.lib.data.handler.DataAction;
 
 /**
  * Created by sgutierc on 01-07-2016.
  */
-public class PresupuestoControllerImp implements PresupuestoController {
-    private final String DB_TABLE_PRESUPUESTO = "presupuesto";
-    private final String DB_TABLE_CATEGORIA = "categoria";
-
-    private final String DB_ID = "id";
-    private final String DB_MONTH = "month";
-    private final String DB_YEAR = "year";
-    private final String DB_CATEGORIA_ID = "idCategoria";
-    private final String DB_MONTO = "monto";
-
-    private final String DB_CAT_DESCRIPCION = "descripcion";
+public class PresupuestoControllerImp implements PresupuestoController, Listener {
 
     private SQLiteDatabase sqLiteDatabase;
+    private final ClassInterest interest = new ClassInterest(DataAction.class);
+
 
     public PresupuestoControllerImp(SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
+        //Conecta controller al bus de notificaciones
+        RepositoryChannel.getInstance().attachListener(this, interest);
     }
+
 
     @Override
     public List<Presupuesto> getPresupuestos() {
         String query = String.format("select %s.%s,%s,%s,%s,%s from %s join %s on %s=%s.%s",
-                                /*ARG*/DB_TABLE_PRESUPUESTO, DB_MONTH,DB_YEAR, DB_CATEGORIA_ID, DB_MONTO, DB_CAT_DESCRIPCION,
-                                /*FROM*/DB_TABLE_PRESUPUESTO,/*JOIN*/ DB_TABLE_CATEGORIA, /*ON*/DB_CATEGORIA_ID, DB_TABLE_CATEGORIA, DB_ID);
+                                /*ARG*/PRES_TABLE.NAME, PRES_TABLE.FIELD_MONTH, PRES_TABLE.FIELD_YEAR, PRES_TABLE.FIELD_CATEGORIA_ID, PRES_TABLE.FIELD_MONTO, CAT_TABLE.FIELD_DESC,
+                                /*FROM*/PRES_TABLE.NAME,/*JOIN*/ CAT_TABLE.NAME, /*ON*/PRES_TABLE.FIELD_CATEGORIA_ID, CAT_TABLE.NAME, CAT_TABLE.FIELD_TITLE);
 
 
         Log.d(this.getClass().getName(), "P Q: " + query);
@@ -48,14 +52,14 @@ public class PresupuestoControllerImp implements PresupuestoController {
         List<Presupuesto> presupuestos = new ArrayList<>();
 
         while (c.moveToNext()) {
-            long month=c.getLong(0);
+            long month = c.getLong(0);
             long year = c.getLong(1);
-            long idCat = c.getLong(2);
+            String catTitle = c.getString(2);
             long monto = c.getLong(3);
             String descripcion = c.getString(4);
 
-            Categoria categoria = new Categoria(idCat, descripcion);
-            Presupuesto presupuesto = new Presupuesto(month,year, monto, categoria);
+            Categoria categoria = new Categoria(catTitle, descripcion);
+            Presupuesto presupuesto = new Presupuesto(month, year, monto, categoria);
 
             presupuestos.add(presupuesto);
         }
@@ -63,27 +67,69 @@ public class PresupuestoControllerImp implements PresupuestoController {
         return presupuestos;
     }
 
+
     @Override
-    public void insertPresupuesto(Presupuesto presupuesto) throws Exception {
+    public void handle(Object object) {
+        if (object != null && interest.isOfLike(object)) {
+            DataAction action = (DataAction) object;
+            if (action.getData() != null && (action.getData() instanceof Presupuesto)) {
+                Presupuesto presupuesto = (Presupuesto) action.getData();
+
+                try {
+                    switch (action.getTrigger()) {
+                        case UPDATE:
+                        case INSERT: {
+                            updatePresupuesto(presupuesto);
+                            break;
+                        }
+                        case DELETE: { //TODO
+                            break;
+                        }
+                        default: { //TODO
+                            break;
+                        }
+                    }
+
+
+                } catch (Exception e) {
+                    Log.e(this.getClass().getName(), e.toString());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void updatePresupuesto(Presupuesto presupuesto) throws Exception {
+        boolean hasId = (presupuesto.getId() != null);
+
         ContentValues values = new ContentValues();
+        /*Composed ID*/
         Categoria cat = presupuesto.getCategoria();
+        StringID catId = (StringID) cat.getId();
+        values.put(PRES_TABLE.FIELD_CATEGORIA_ID, catId.getId());
+        long month = Calendar.getInstance().get(Calendar.MONTH);
+        long year = Calendar.getInstance().get(Calendar.YEAR);
+        if (hasId) {
+            month = ((PresupuestoId) presupuesto.getId()).getMes();
+            year = ((PresupuestoId) presupuesto.getId()).getAnnio();
+        }
+        /*Other values*/
+        values.put(PRES_TABLE.FIELD_MONTH, month);
+        values.put(PRES_TABLE.FIELD_YEAR, year);
+        values.put(PRES_TABLE.FIELD_MONTO, presupuesto.getMonto());
 
-        int month= Calendar.getInstance().get(Calendar.MONTH);
-        int year= Calendar.getInstance().get(Calendar.YEAR);
-
-        values.put(DB_MONTH, month);
-        values.put(DB_YEAR, year);
-        values.put(DB_CATEGORIA_ID, cat.getId());
-        values.put(DB_MONTO, presupuesto.getMonto());
-
-        long result=sqLiteDatabase.insertWithOnConflict(DB_TABLE_PRESUPUESTO,null,values,SQLiteDatabase.CONFLICT_IGNORE);
-
-        if(result==-1) {
-            String where=String.format("%s=? and %s=? and %s=?",DB_MONTH,DB_YEAR,DB_CATEGORIA_ID);
-            result=sqLiteDatabase.update(DB_TABLE_PRESUPUESTO, values, where,new String[]{String.valueOf(month),String.valueOf(year),String.valueOf(cat.getId())});
+        long result = sqLiteDatabase.insertWithOnConflict(PRES_TABLE.NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+        if (result == -1) //try to update
+        {
+            String where = String.format("%s=? and %s=? and %s=?", PRES_TABLE.FIELD_MONTH, PRES_TABLE.FIELD_YEAR, PRES_TABLE.FIELD_CATEGORIA_ID);
+            result = sqLiteDatabase.update(PRES_TABLE.NAME, values, where, new String[]{String.valueOf(month), String.valueOf(year), catId.getId()});
         }
 
-        if(result==-1)throw new Exception("Error on insert new Presupuesto");
+        if (result == -1) throw new Exception("Error on insert new Presupuesto");
+
+        PresupuestoId id = new PresupuestoId(catId, month, year);
+        presupuesto.setId(id);
+        DataDispatcher.getInstance().spread(new DataAction(presupuesto, DataAction.Trigger.UPDATE));
     }
 }
 

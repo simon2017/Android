@@ -24,7 +24,7 @@ public class GastoList extends BaseList<Gasto, GastoView> {
     }
 
     @Override
-    protected Gasto convertFrom(Data data) {
+    protected Gasto convertFrom(Object data) {
         if (data instanceof Gasto) return (Gasto) data;
         else return null;
     }

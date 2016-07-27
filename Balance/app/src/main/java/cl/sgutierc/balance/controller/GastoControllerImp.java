@@ -10,13 +10,16 @@ import java.util.Date;
 import java.util.List;
 
 import cl.sgutierc.balance.data.Categoria;
-import lib.data.lib.data.handler.DataAction;
 import cl.sgutierc.balance.data.Gasto;
 import cl.sgutierc.balance.database.CAT_TABLE;
 import cl.sgutierc.balance.database.GASTO_TABLE;
 import cl.sgutierc.balance.dispatcher.DataDispatcher;
+import cl.sgutierc.balance.dispatcher.RepositoryChannel;
+import lib.data.StringID;
 import lib.data.dispatcher.ClassInterest;
 import lib.data.dispatcher.Listener;
+import lib.data.dispatcher.LongId;
+import lib.data.lib.data.handler.DataAction;
 
 /**
  * Created by sgutierc on 14-06-2016.
@@ -29,7 +32,7 @@ public class GastoControllerImp implements GastoController, Listener {
     public GastoControllerImp(SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
         //Conecta controller al bus de notificaciones
-        DataDispatcher.getInstance().attachListener(this, interest);
+        RepositoryChannel.getInstance().attachListener(this, interest);
     }
 
     @Override
@@ -67,18 +70,23 @@ public class GastoControllerImp implements GastoController, Listener {
         boolean update = (gasto.getId() != null);
 
         ContentValues values = new ContentValues();
-        values.put(GASTO_TABLE.FIELD_ID_CAT, gasto.getCategoria().getId());
+        StringID catId = (StringID) gasto.getCategoria().getId();
+        values.put(GASTO_TABLE.FIELD_ID_CAT, catId.getId());
         values.put(GASTO_TABLE.FIELD_MONTO, gasto.getMonto());
         values.put(GASTO_TABLE.FIELD_FECHA, GASTO_TABLE.DATE_FORMAT.format(gasto.getFecha()));
         if (update == true) {
-            Gasto.GastoId gid = (Gasto.GastoId) gasto.getId();
+            LongId gid = (LongId) gasto.getId();
             String where = GASTO_TABLE.FIELD_ID + "=?";
             sqLiteDatabase.update(GASTO_TABLE.NAME, values, where, new String[]{gid.getId() + ""});
         } else {
-            long result = sqLiteDatabase.insertWithOnConflict(GASTO_TABLE.NAME, null, values, SQLiteDatabase.CONFLICT_FAIL);
-            if (result == -1)
+            long resultId = sqLiteDatabase.insertWithOnConflict(GASTO_TABLE.NAME, null, values, SQLiteDatabase.CONFLICT_FAIL);
+            if (resultId == -1)
                 throw new Exception("Error on insert new gasto");
+            LongId gid = new LongId(resultId);
+            gasto.setId(gid);
         }
+
+        DataDispatcher.getInstance().spread(new DataAction(gasto, DataAction.Trigger.UPDATE));
     }
 
     public List<Gasto> getGastos() {
@@ -91,13 +99,13 @@ public class GastoControllerImp implements GastoController, Listener {
                 /*from*/
                     GASTO_TABLE.NAME, CAT_TABLE.NAME,
                 /*on*/
-                    GASTO_TABLE.NAME + "." + GASTO_TABLE.FIELD_ID_CAT, CAT_TABLE.NAME + "." + CAT_TABLE.FIELD_ID);
+                    GASTO_TABLE.NAME + "." + GASTO_TABLE.FIELD_ID_CAT, CAT_TABLE.NAME + "." + CAT_TABLE.FIELD_TITLE);
 
             String[] selectionArgs = null;
             Cursor cursor = sqLiteDatabase.rawQuery(query, selectionArgs);
             while (cursor.moveToNext()) {
                 long gastoId = cursor.getLong(0);
-                long catId = cursor.getLong(1);
+                String catTitle = cursor.getString(1);
                 long monto = cursor.getLong(2);
                 Date fecha = new Date();
                 try {
@@ -106,9 +114,8 @@ public class GastoControllerImp implements GastoController, Listener {
                     Log.e(this.getClass().getName(), e.toString());
                 }
                 String descripcion = cursor.getString(4);
-
-                Categoria categoria = new Categoria(catId, descripcion);
-                Gasto gasto = new Gasto(new Gasto.GastoId(gastoId), monto, fecha, categoria);
+                Categoria categoria = new Categoria(catTitle, descripcion);
+                Gasto gasto = new Gasto(new LongId(gastoId), monto, fecha, categoria);
 
                 gastos.add(gasto);
             }
