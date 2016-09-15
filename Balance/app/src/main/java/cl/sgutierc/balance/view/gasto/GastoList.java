@@ -1,31 +1,20 @@
 package cl.sgutierc.balance.view.gasto;
 
-import android.app.Activity;
 import android.content.Context;
+import android.util.AttributeSet;
 
 import cl.sgutierc.balance.data.Gasto;
 import cl.sgutierc.balance.data.Presupuesto;
-import cl.sgutierc.balance.view.BaseList;
-import cl.sgutierc.balance.view.gasto.GastoView;
-import lib.data.Data;
+import cl.sgutierc.balance.view.HeadedList;
+import cl.sgutierc.balance.view.presupuesto.PresupuestoView;
 
 /**
- * Created by sgutierc on 19-07-2016.
+ * Created by sgutierc on 08-09-2016.
  */
-public class GastoList extends BaseList<Gasto, GastoView> {
+public class GastoList extends HeadedList<Gasto, GastoView> {
+    private static final String[] headers = new String[]{"Ultimos Gastos"};
 
-    public GastoList(int layoutId, Activity activity) {
-        super(layoutId, activity);
-    }
-
-    @Override
-    protected GastoView getView(Context context) {
-        return new GastoView(context);
-    }
-
-    @Override
-    protected Gasto convertFrom(Object data) {
-        if (data instanceof Gasto) return (Gasto) data;
-        else return null;
+    public GastoList(Context context, AttributeSet attrs) {
+        super(context, attrs, headers);
     }
 }

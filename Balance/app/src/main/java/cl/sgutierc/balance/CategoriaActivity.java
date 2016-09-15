@@ -15,6 +15,7 @@ import cl.sgutierc.balance.data.Categoria;
 import cl.sgutierc.balance.database.BalanceSchema;
 import cl.sgutierc.balance.dispatcher.DataDispatcher;
 import cl.sgutierc.balance.dispatcher.RepositoryChannel;
+import cl.sgutierc.balance.view.categoria.CategoriaAdapter;
 import cl.sgutierc.balance.view.categoria.CategoriaList;
 import cl.sgutierc.libdatarepository.SQLiteRepo;
 import lib.data.lib.data.handler.DataAction;
@@ -67,12 +68,15 @@ public class CategoriaActivity extends AppCompatActivity {
                                     }
 
         );
-
     }
 
     private void loadCategorias() {
         CategoriasControllerImp query = new CategoriasControllerImp(database);
-        CategoriaList catList = new CategoriaList(R.id.catListView, this);
+
+        CategoriaList catList = (CategoriaList) findViewById(R.id.catListView);
+        CategoriaAdapter adapter = new CategoriaAdapter(this);
+        catList.setAdapter(adapter);
+
         DataDispatcher.getInstance().spread(query.getCategorias(), DataAction.Trigger.LOAD);
     }
 }

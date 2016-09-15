@@ -4,15 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
-import java.util.List;
-
-import cl.sgutierc.balance.data.Gasto;
 import cl.sgutierc.balance.dispatcher.DataDispatcher;
-import cl.sgutierc.balance.view.gasto.GastoView;
 import lib.data.Data;
 import lib.data.dispatcher.ClassInterest;
 import lib.data.dispatcher.Listener;
@@ -21,19 +18,17 @@ import lib.data.lib.data.handler.DataAction;
 /**
  * Created by sgutierc on 19-07-2016.
  */
-public abstract class BaseList<U extends Data, V extends DataView> extends ArrayAdapter<U> implements Listener {
-    private int layoutId;
-    private ListView listView;
+public abstract class BaseListAdapter<U extends Data, V extends DataView> extends ArrayAdapter<U> implements Listener {
     private ClassInterest interest = new ClassInterest(DataAction.class);
     private Activity activity;
 
-    public BaseList(int layoutId, Activity activity) {
+    public BaseListAdapter(Activity activity) {
+        this(activity, null);
+    }
+
+    public BaseListAdapter(Activity activity, String[] headers) {
         super(activity, 0);
         this.activity = activity;
-        this.layoutId = layoutId;
-
-        listView = (ListView) activity.findViewById(layoutId);
-        listView.setAdapter(this);
 
         //attach to notification bus
         DataDispatcher.getInstance().attachListener(this, interest);

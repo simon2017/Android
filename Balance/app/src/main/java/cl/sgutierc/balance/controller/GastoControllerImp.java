@@ -11,6 +11,7 @@ import java.util.List;
 
 import cl.sgutierc.balance.data.Categoria;
 import cl.sgutierc.balance.data.Gasto;
+import cl.sgutierc.balance.data.Presupuesto;
 import cl.sgutierc.balance.database.CAT_TABLE;
 import cl.sgutierc.balance.database.GASTO_TABLE;
 import cl.sgutierc.balance.dispatcher.DataDispatcher;
@@ -115,6 +116,40 @@ public class GastoControllerImp implements GastoController, Listener {
                 }
                 String descripcion = cursor.getString(4);
                 Categoria categoria = new Categoria(catTitle, descripcion);
+                Gasto gasto = new Gasto(new LongId(gastoId), monto, fecha, categoria);
+
+                gastos.add(gasto);
+            }
+        }
+
+        return gastos;
+    }
+
+    public List<Gasto> getGastos(Categoria categoria) {
+        List<Gasto> gastos = new ArrayList<>();
+        {
+            //select gasto.id,idCategoria,monto,fecha from gasto where idCategoria=?
+            String query = String.format("select %s,%s,%s,%s from %s where %s=?",
+                /*select*/
+                    GASTO_TABLE.NAME + "." + GASTO_TABLE.FIELD_ID, GASTO_TABLE.FIELD_ID_CAT, GASTO_TABLE.FIELD_MONTO, GASTO_TABLE.FIELD_FECHA,
+                /*from*/
+                    GASTO_TABLE.NAME,
+                /*where*/
+                    GASTO_TABLE.FIELD_ID_CAT);
+
+            String[] selectionArgs = new String[]{((StringID) categoria.getId()).getId()};
+
+            Cursor cursor = sqLiteDatabase.rawQuery(query, selectionArgs);
+            while (cursor.moveToNext()) {
+                long gastoId = cursor.getLong(0);
+                String catTitle = cursor.getString(1);
+                long monto = cursor.getLong(2);
+                Date fecha = new Date();
+                try {
+                    fecha = GASTO_TABLE.DATE_FORMAT.parse(cursor.getString(3));
+                } catch (Exception e) {
+                    Log.e(this.getClass().getName(), e.toString());
+                }
                 Gasto gasto = new Gasto(new LongId(gastoId), monto, fecha, categoria);
 
                 gastos.add(gasto);

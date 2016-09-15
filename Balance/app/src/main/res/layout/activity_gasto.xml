@@ -14,25 +14,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
         android:gravity="center"
-        android:text="Ultimos Gastos"
+        android:text="Nuevo Gasto"
         android:id="@+id/listTitle" />
-
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/gastoListView"
-        android:layout_below="@+id/listTitle"
-        android:layout_above="@+id/dateEditTxt"
-        android:layout_centerHorizontal="true" />
-
 
     <TextView
         android:id="@+id/dateEditTxt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_above="@+id/categoriaDropdown"
+        android:layout_below="@+id/listTitle"
         android:layout_marginTop="10dp"
         android:gravity="center"
         android:inputType="date" />
@@ -41,18 +33,17 @@
         android:id="@+id/categoriaDropdown"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_above="@+id/montoEditTxt"
+        android:layout_below="@+id/dateEditTxt"
         android:clickable="true"
         android:gravity="center"
         android:spinnerMode="dropdown" />
 
-    <EditText
+    <cl.sgutierc.balance.view.NumericEditText
         android:id="@+id/montoEditTxt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/saveButton"
+        android:layout_below="@+id/categoriaDropdown"
         android:layout_marginTop="10dp"
         android:ems="10"
         android:gravity="center"
@@ -63,10 +54,22 @@
         android:id="@+id/saveButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:text="Guardar" />
+        android:layout_below="@+id/montoEditTxt"
+        android:text="Guardar"
+        android:layout_marginBottom="10dp"/>
+
+
+
+    <cl.sgutierc.balance.view.gasto.GastoList
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gastoListView"
+        android:layout_below="@+id/saveButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
 
 
 

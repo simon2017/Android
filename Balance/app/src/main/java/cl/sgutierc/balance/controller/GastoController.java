@@ -2,6 +2,7 @@ package cl.sgutierc.balance.controller;
 
 import java.util.List;
 
+import cl.sgutierc.balance.data.Categoria;
 import cl.sgutierc.balance.data.Gasto;
 
 /**
@@ -11,5 +12,5 @@ public interface GastoController {
 
     void updateGasto(Gasto gasto) throws Exception;
     List<Gasto> getGastos();
-
+    List<Gasto> getGastos(Categoria categoria);
 }

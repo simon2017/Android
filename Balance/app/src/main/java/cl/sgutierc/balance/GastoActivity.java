@@ -25,6 +25,8 @@ import cl.sgutierc.balance.data.Gasto;
 import cl.sgutierc.balance.database.BalanceSchema;
 import cl.sgutierc.balance.dispatcher.DataDispatcher;
 import cl.sgutierc.balance.dispatcher.RepositoryChannel;
+import cl.sgutierc.balance.view.NumericEditText;
+import cl.sgutierc.balance.view.gasto.GastoAdapter;
 import cl.sgutierc.balance.view.gasto.GastoList;
 import cl.sgutierc.libdatarepository.SQLiteRepo;
 import lib.data.lib.data.handler.DataAction;
@@ -39,7 +41,7 @@ public class GastoActivity extends AppCompatActivity implements DatePickerDialog
     public static final String FECHA_BUNDLE_ID = "fecha.id";
 
     private TextView dateTxt;
-    public static final SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
+    public static final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
     private GastoActivity activity;
     private SQLiteDatabase database;
 
@@ -88,15 +90,15 @@ public class GastoActivity extends AppCompatActivity implements DatePickerDialog
             saveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    EditText montotxt = (EditText) findViewById(R.id.montoEditTxt);
+                    NumericEditText montotxt = (NumericEditText) findViewById(R.id.montoEditTxt);
                     TextView dateEditTxt = (TextView) findViewById(R.id.dateEditTxt);
                     Spinner categoriaSpin = (Spinner) findViewById(R.id.categoriaDropdown);
 
                     boolean error = false;
                     long monto = 0l;
                     try {
-                        monto = Long.parseLong(montotxt.getText().toString());
-                    } catch (NumberFormatException e) {
+                        monto = montotxt.getNumber().longValue();
+                    } catch (Exception e) {
                         error = true;
                     }
                     Categoria categoriaSel = (Categoria) categoriaSpin.getSelectedItem();
@@ -129,7 +131,10 @@ public class GastoActivity extends AppCompatActivity implements DatePickerDialog
 
 
     void loadGastos() {
-        GastoList gastoList = new GastoList(R.id.gastoListView, this);
+
+        GastoList gastoList = (GastoList) findViewById(R.id.gastoListView);
+        GastoAdapter adapter = new GastoAdapter(this);
+        gastoList.setAdapter(adapter);
 
         GastoControllerImp gastoController = new GastoControllerImp(database);
         DataDispatcher.getInstance().spread(gastoController.getGastos(), DataAction.Trigger.LOAD);

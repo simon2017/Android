@@ -1,36 +1,20 @@
 package cl.sgutierc.balance.view.presupuesto;
 
-import android.app.Activity;
 import android.content.Context;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.util.AttributeSet;
 
-import java.util.List;
-
-import cl.sgutierc.balance.data.Gasto;
 import cl.sgutierc.balance.data.Presupuesto;
-import cl.sgutierc.balance.view.BaseList;
-import cl.sgutierc.balance.view.gasto.GastoView;
-import lib.data.Data;
+import cl.sgutierc.balance.data.Resumen;
+import cl.sgutierc.balance.view.HeadedList;
+import cl.sgutierc.balance.view.resumen.ResumenView;
 
 /**
- * Created by sgutierc on 13-07-2016.
+ * Created by sgutierc on 08-09-2016.
  */
-public class PresupuestoList extends BaseList<Presupuesto, PresupuestoView> {
+public class PresupuestoList extends HeadedList<Presupuesto, PresupuestoView> {
+    private static final String[] headers = new String[]{"Actuales"};
 
-    public PresupuestoList(int layoutId, Activity activity) {
-        super(layoutId, activity);
-    }
-
-    @Override
-    protected PresupuestoView getView(Context context) {
-        return new PresupuestoView(context);
-    }
-
-    @Override
-    protected Presupuesto convertFrom(Object data) {
-        if (data instanceof Presupuesto) return (Presupuesto) data;
-        else return null;
+    public PresupuestoList(Context context, AttributeSet attrs) {
+        super(context, attrs, headers);
     }
 }

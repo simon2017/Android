@@ -13,31 +13,25 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:gravity="center"
-        android:text="Presupuestos"
+        android:layout_marginBottom="10dp"
+        android:text="Nuevo Presupuesto"
         android:id="@+id/listTitle"/>
 
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/presListView"
-        android:layout_below="@+id/listTitle"
-        android:layout_above="@+id/categoriaDropdown"
-        android:layout_centerHorizontal="true"/>
 
     <Spinner
         android:id="@+id/categoriaDropdown"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/montoEditTxt"
+        android:layout_below="@+id/listTitle"
         android:clickable="true"
         android:gravity="center"
         android:spinnerMode="dropdown" />
 
-    <EditText
+    <cl.sgutierc.balance.view.NumericEditText
         android:id="@+id/montoEditTxt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/saveButton"
+        android:layout_below="@id/categoriaDropdown"
         android:layout_marginTop="10dp"
         android:ems="10"
         android:gravity="center"
@@ -48,9 +42,20 @@
         android:id="@+id/saveButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="Guardar" />
+        android:layout_below="@+id/montoEditTxt"
+        android:text="Guardar"
+        android:layout_marginBottom="10dp"/>
 
+
+
+
+    <cl.sgutierc.balance.view.presupuesto.PresupuestoList
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/presListView"
+        android:layout_below="@+id/saveButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
 
 
 </RelativeLayout>

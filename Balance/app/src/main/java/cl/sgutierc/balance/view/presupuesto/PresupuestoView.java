@@ -24,8 +24,11 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 import cl.sgutierc.balance.R;
 import cl.sgutierc.balance.controller.CategoriasControllerImp;
@@ -40,6 +43,8 @@ import cl.sgutierc.libdatarepository.SQLiteRepo;
  * Created by sgutierc on 08-06-2016.
  */
 public class PresupuestoView extends DataView<Presupuesto> {
+
+    private static final DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
 
     public PresupuestoView(Context context, AttributeSet attrs, int defStyle) {
         super(R.layout.presupuesto_view, context, attrs, defStyle);
@@ -59,7 +64,7 @@ public class PresupuestoView extends DataView<Presupuesto> {
 
         Categoria cat = getData().getCategoria();
         categoriaTxt.setText(cat.getTitulo());
-        montoEdit.setText(String.valueOf(getData().getMonto()));
+        montoEdit.setText(formatter.format(getData().getMonto()));
     }
 
 }

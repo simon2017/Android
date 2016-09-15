@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int LOAD_GASTO_ACTIVITY_ID = 10;
     private static final int LOAD_PRESUPUESTO_ACTIVITY_ID = 20;
     private static final int LOAD_CATEGORIA_ACTIVITY_ID = 30;
+    private static final int LOAD_RESUMEN_ACTIVITY_ID = 40;
     //private GastoControllerImp controller = null;
 
     @Override
@@ -62,6 +63,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), CategoriaActivity.class);
                 startActivityForResult(intent, LOAD_CATEGORIA_ACTIVITY_ID);
+            }
+        });
+
+        Button resumenBttn = (Button) findViewById(R.id.resumenBttn);
+        resumenBttn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), ResumenActivity.class);
+                startActivityForResult(intent, LOAD_RESUMEN_ACTIVITY_ID);
             }
         });
 
