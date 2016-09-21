@@ -5,7 +5,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -15,37 +17,36 @@ import cl.sgutierc.balance.data.Categoria;
 import cl.sgutierc.balance.database.BalanceSchema;
 import cl.sgutierc.balance.dispatcher.DataDispatcher;
 import cl.sgutierc.balance.dispatcher.RepositoryChannel;
+import cl.sgutierc.balance.view.ListableFragment;
 import cl.sgutierc.balance.view.categoria.CategoriaAdapter;
 import cl.sgutierc.balance.view.categoria.CategoriaList;
 import cl.sgutierc.libdatarepository.SQLiteRepo;
 import lib.data.lib.data.handler.DataAction;
 
 
-public class CategoriaActivity extends AppCompatActivity {
+public class CategoriaActivity extends ListableFragment {
 
     private GastoControllerImp controller = null;
     private SQLiteDatabase database = null;
-    private Activity activity = null;
+    private CategoriaActivity activity = null;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_categorias);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_categorias, container, false);
         activity = this;
-        this.setTitle("Categorias");
         //Initialize repository
         {
-            SQLiteRepo repository = new SQLiteRepo(this, new BalanceSchema());
+            SQLiteRepo repository = new SQLiteRepo(this.getActivity(), new BalanceSchema());
             database = repository.getWritableDatabase();
         }
-        loadCategorias();
+        loadCategorias(view);
 
-        Button saveBttn = (Button) findViewById(R.id.saveButton);
+        Button saveBttn = (Button) view.findViewById(R.id.saveButton);
         saveBttn.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            EditText catTitleEditTxt = (EditText) findViewById(R.id.catTitleEditTxt);
-                                            EditText catDescEditTxt = (EditText) findViewById(R.id.catDescEditTxt);
+                                            EditText catTitleEditTxt = (EditText) view.findViewById(R.id.catTitleEditTxt);
+                                            EditText catDescEditTxt = (EditText) view.findViewById(R.id.catDescEditTxt);
                                             String descripcion = catDescEditTxt.getText().toString();
                                             String title = catTitleEditTxt.getText().toString();
 
@@ -54,7 +55,7 @@ public class CategoriaActivity extends AppCompatActivity {
                                                 Categoria categoria = new Categoria(title, descripcion);
                                                 RepositoryChannel.getInstance().spread(new DataAction(categoria, DataAction.Trigger.INSERT));
                                             } else {
-                                                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(activity);
+                                                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(activity.getActivity());
 
                                                 dlgAlert.setMessage("Favor ingresar descripcion en categoria");
                                                 dlgAlert.setTitle("Datos incorrectos");
@@ -68,15 +69,24 @@ public class CategoriaActivity extends AppCompatActivity {
                                     }
 
         );
+        return view;
     }
 
-    private void loadCategorias() {
+    private void loadCategorias(View view) {
         CategoriasControllerImp query = new CategoriasControllerImp(database);
 
-        CategoriaList catList = (CategoriaList) findViewById(R.id.catListView);
-        CategoriaAdapter adapter = new CategoriaAdapter(this);
+        CategoriaList catList = (CategoriaList) view.findViewById(R.id.catListView);
+        CategoriaAdapter adapter = new CategoriaAdapter(this.getActivity());
         catList.setAdapter(adapter);
 
         DataDispatcher.getInstance().spread(query.getCategorias(), DataAction.Trigger.LOAD);
+    }
+
+    public String getTitle() {
+        return "Categoria";
+    }
+
+    public String getListableText() {
+        return "Categoria";
     }
 }
