@@ -90,7 +90,7 @@ public class GastoActivity extends ListableFragment implements DatePickerDialog.
 
             saveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onClick(View innerView) {
                     NumericEditText montotxt = (NumericEditText) view.findViewById(R.id.montoEditTxt);
                     TextView dateEditTxt = (TextView) view.findViewById(R.id.dateEditTxt);
                     Spinner categoriaSpin = (Spinner) view.findViewById(R.id.categoriaDropdown);

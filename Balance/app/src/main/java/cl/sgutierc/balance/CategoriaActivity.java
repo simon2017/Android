@@ -44,7 +44,7 @@ public class CategoriaActivity extends ListableFragment {
         Button saveBttn = (Button) view.findViewById(R.id.saveButton);
         saveBttn.setOnClickListener(new View.OnClickListener() {
                                         @Override
-                                        public void onClick(View view) {
+                                        public void onClick(View innerView) {
                                             EditText catTitleEditTxt = (EditText) view.findViewById(R.id.catTitleEditTxt);
                                             EditText catDescEditTxt = (EditText) view.findViewById(R.id.catDescEditTxt);
                                             String descripcion = catDescEditTxt.getText().toString();

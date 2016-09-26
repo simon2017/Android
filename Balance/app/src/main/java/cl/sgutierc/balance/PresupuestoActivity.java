@@ -50,7 +50,7 @@ public class PresupuestoActivity extends ListableFragment {
         Button saveBttn = (Button) view.findViewById(R.id.saveButton);
         saveBttn.setOnClickListener(new View.OnClickListener() {
                                         @Override
-                                        public void onClick(View view) {
+                                        public void onClick(View innerView) {
                                             Spinner catSpinner = (Spinner) view.findViewById(R.id.categoriaDropdown);
                                             NumericEditText montoEditTxt = (NumericEditText) view.findViewById(R.id.montoEditTxt);
 
